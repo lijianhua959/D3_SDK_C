@@ -416,3 +416,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Custom addition
+D3_SDK_C_k/CMakeLists.txt
+CMakeLists.txt
+CMakeSettings.json
