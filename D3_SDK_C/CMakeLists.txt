@@ -58,6 +58,42 @@ if(WIN32)# Windows 平台
 
 elseif(UNIX) # Linux 平台
 
+	set(OpenCV_DIR /home/ljh/third_party_libs/opencv/linux/lib/cmake/opencv4)
+	set(Jpeg_ROOT_DIR /home/ljh/third_party_libs/jpeg-turbo/linux)
+	set(OPENSSL_ROOT_DIR /home/ljh/third_party_libs/openssl/linux)
+	set(Update_ROOT_DIR /home/ljh/third_party_libs/firmware_update/linux)
+
+	# set(OpenCV_DIR /home/ljh/third_party_libs/opencv/arm7.5/lib/cmake/opencv4)
+	# set(Jpeg_ROOT_DIR /home/ljh/third_party_libs/jpeg-turbo/arm7.5)
+	# set(OPENSSL_ROOT_DIR /home/ljh/third_party_libs/openssl/arm7.5)
+	# set(Update_ROOT_DIR /home/ljh/third_party_libs/firmware_update/arm7.5)
+
+	# set(OpenCV_DIR /home/ljh/third_party_libs/opencv/arm11.2/lib/cmake/opencv4)
+	# set(Jpeg_ROOT_DIR /home/ljh/third_party_libs/jpeg-turbo/arm11.2)
+	# set(OPENSSL_ROOT_DIR /home/ljh/third_party_libs/openssl/arm11.2)
+	# set(Update_ROOT_DIR /home/ljh/third_party_libs/firmware_update/arm11.2)
+
+	find_package(Eigen3 REQUIRED)
+	find_package(OpenCV REQUIRED)
+	find_package(OpenSSL REQUIRED)
+
+	include_directories(/usr/include/eigen3)
+	include_directories(${Jpeg_ROOT_DIR}/include)
+	include_directories(${OPENSSL_INCLUDE_DIR})
+	include_directories(${Update_ROOT_DIR}/include)
+
+	add_library(d3_c_sdk SHARED LWD3Api.cpp LWD3Type.h LWD3Api.h)
+
+	target_link_libraries(d3_c_sdk 
+	${OpenCV_LIBS} 
+	${Jpeg_ROOT_DIR}/lib/libturbojpeg.a 
+	${OPENSSL_CRYPTO_LIBRARIES} 
+	${Update_ROOT_DIR}/lib/libfirmware_update.a 
+	${Update_ROOT_DIR}/lib/libssh2.a
+	)
+
+	set_target_properties(d3_c_sdk PROPERTIES VERSION ${MAJOR_VAR}.${MINOR_VAR}.${PATCH_VAR}.${REVISION_VAR})
+
 
 else() # 其他平台
 

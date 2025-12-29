@@ -1,7 +1,6 @@
 ﻿
 #include <iostream>
 #include "LWD3Api.h"
-#include <windows.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 
@@ -101,15 +100,15 @@ int main(int argc, char* argv[])
 		handleList[i] = deviceInfoList[i].handle;
 	}
 
-	//printf("固件更新中......\n");
-	//ret = LWUpdateFirmware1("192.168.1.200", "C:/Users/12267/Desktop/DATA/update_packets/updata_enc_v1.0.29.sh");
-	//if (ret != LW_RETURN_OK)
-	//{
-	//	printf("\LWUpdateFirmware function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-	//	return 0;
-	//}
-	//printf("固件更新完成\n");
-	//return 0;
+	// printf("固件更新中......\n");
+	// ret = LWUpdateFirmware1("192.168.1.200", "/home/ljh/data/updata_enc_v1.0.31.sh");
+	// if (ret != LW_RETURN_OK)
+	// {
+	// 	printf("LWUpdateFirmware function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+	// 	return 0;
+	// }
+	// printf("固件更新完成\n");
+	// return 0;
 
 	int index = 0;
 	if (findCount > 1)

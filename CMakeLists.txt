@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.26)
 
 # 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)
@@ -15,7 +15,7 @@ project ("D3SDKC")
 # 设置版本号
 set(MAJOR_VAR 3)
 set(MINOR_VAR 3)
-set(PATCH_VAR 1)
+set(PATCH_VAR 2)
 set(REVISION_VAR 0)
 
 

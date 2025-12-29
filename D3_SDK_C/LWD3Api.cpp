@@ -4037,6 +4037,8 @@ LWReturnCode ljhNS::DeviceHandle::UpdateFirmware(const char* filename)
 
 	LOG_INFO_OUT("<%s>", sn.c_str());
 
+	// return LW_RETURN_NOT_SUPPORTED;
+
 	UpdateToolTask task(inet_ntoa(remoteAddr.sin_addr), 22, "root", "lv-zgyfjch", filename, 3000);
 	UpdateResultType result = task.processor();
 
@@ -6216,6 +6218,8 @@ LWReturnCode LWUpdateFirmware1(const char* ip, const char* filename)
 {
 	LOG_INFO_OUT("<%s>", ip);
 	if (!ljhNS::gGlobal.initEnable.load()) return LW_RETURN_UNINITIALIZED;
+
+	// return LW_RETURN_NOT_SUPPORTED;
 
 	UpdateToolTask task(ip, 22, "root", "lv-zgyfjch", filename, 3000);
 	UpdateResultType result = task.processor();
