@@ -370,7 +370,7 @@ LW_C_API LWReturnCode LWSetRgbSensorContrastRatio(LWDeviceHandle handle, int32_t
 LW_C_API LWReturnCode LWGetRgbSensorContrastRatio(LWDeviceHandle handle, int32_t* value);
 
 /// @brief 设置设备的网络配置信息。
-/// @note 设置成功后，原来的设备描述符失效，需要重新调用“LWFindDevices”函数，用新的设备描述符打开设备。
+/// @note 设置成功后，设备会自动重启，设备描述符也会失效，因此需要重新进行设备搜索得到新的设备描述符。
 /// @param[in] handle 设备描述符。
 /// @param[in] info 网络配置信息。
 /// @return 返回码。

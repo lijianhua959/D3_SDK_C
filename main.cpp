@@ -28,35 +28,8 @@ void networkMonitoringCallback(LWDeviceHandle handle, const char* error, void* p
 	}
 
 	/// Do some custom operations after disconnection.
-	printf("Device Handle: %llu\nError: %s\n", handle, error);
+	printf("\n\nDevice Handle: %llu\nError: %s\n\n", handle, error);
 	/// 
-}
-
-void showMat_Thre(cv::Mat input, int Thre, int w = 640, int h = 480) {
-	//// 将 CV_32F 映射到 CV_8U 范围
-	//cv::Mat mappedMat, tempMat;
-	//tempMat = input.clone();
-	//tempMat.setTo(0, tempMat > Thre);
-	//cv::normalize(tempMat, mappedMat, 0, 255, cv::NORM_MINMAX, CV_8U);
-	////tempMat.convertTo(mappedMat, CV_8UC1, 255.0 / 6000);
-
-	//// 创建灰度图像
-	//cv::Mat grayscaleImage(mappedMat.size(), CV_8U);
-
-	// 复制数据到灰度图像
-	//mappedMat.copyTo(grayscaleImage);
-
-	cv::Mat mappedMat;
-	cv::normalize(input, mappedMat, 0, 255, cv::NORM_MINMAX, CV_8UC1);
-
-	cv::namedWindow("Grayscale Visualization", 0);
-	cv::resizeWindow("Grayscale Visualization", w, h);
-
-	// 显示可视化结果
-	cv::imshow("Grayscale Visualization", mappedMat);
-	cv::waitKey(20);
-
-	return;
 }
 
 
@@ -69,6 +42,20 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	// 注册网络回调函数
+	LWRegisterNetworkMonitoringCallback(networkMonitoringCallback, nullptr);
+
+	////printf("固件更新中......\n");
+	////ret = LWUpdateFirmware1("192.168.1.200", "/home/ljh/data/updata_enc_v1.0.31.sh");
+	//ret = LWUpdateFirmware1("192.168.1.205", "C:/Users/12267/Desktop/DATA/update_packets/updata_enc_v1.0.32.sh");
+	//if (ret != LW_RETURN_OK)
+	//{
+	//	printf("LWUpdateFirmware function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+	//	return 0;
+	//}
+	//printf("固件更新完成\n");
+	//return 0;
+
 	LWDeviceHandle handleList[5];
 	LWDeviceInfo deviceInfoList[5];
 	int32_t findCount = 0;
@@ -76,13 +63,11 @@ int main(int argc, char* argv[])
 	if (ret != LW_RETURN_OK)
 	{
 		printf("LWFindDevices function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-		system("pause");
 		return 0;
 	}
 	if (findCount < 1)
 	{
 		printf("No device found.");
-		system("pause");
 		return 0;
 	}
 
@@ -100,27 +85,26 @@ int main(int argc, char* argv[])
 		handleList[i] = deviceInfoList[i].handle;
 	}
 
-	// printf("固件更新中......\n");
-	// ret = LWUpdateFirmware1("192.168.1.200", "/home/ljh/data/updata_enc_v1.0.31.sh");
-	// if (ret != LW_RETURN_OK)
-	// {
-	// 	printf("LWUpdateFirmware function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-	// 	return 0;
-	// }
-	// printf("固件更新完成\n");
-	// return 0;
-
 	int index = 0;
 	if (findCount > 1)
 	{
 		std::cout << "Please enter the index value: ";
 		std::cin >> index;
-		ret = LWOpenDevice(handleList[index]);
 	}
-	else
-	{
-		ret = LWOpenDevice(handleList[index]);
-	}
+
+	////printf("固件更新中......\n");
+	////ret = LWUpdateFirmware1("192.168.1.200", "/home/ljh/data/updata_enc_v1.0.31.sh");
+	//ret = LWUpdateFirmware1(deviceInfoList[index].ip, "C:/Users/12267/Desktop/DATA/update_packets/updata_enc_v1.0.28.sh");
+	//if (ret != LW_RETURN_OK)
+	//{
+	//	printf("LWUpdateFirmware function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+	//	return 0;
+	//}
+	//printf("固件更新完成\n");
+	//return 0;
+
+	// 打开设备
+	ret = LWOpenDevice(handleList[index]);
 	if (ret != LW_RETURN_OK)
 	{
 		printf("\nLWOpenDevice function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
@@ -139,33 +123,47 @@ int main(int argc, char* argv[])
 	printf("\n\n固件版本: %d.%d.%d.%d\n\n", fv.major, fv.minor, fv.patch, fv.reserved);
 	printf("驱动版本: %d.%d.%d.%d\n\n", dv.major, dv.minor, dv.patch, dv.reserved);
 
-	char sn[20];
-	char ty[20] = {};
-	ret = LWGetDeviceSN(handleList[index], sn, 20);
-	if (ret != LW_RETURN_OK)
-	{
-		printf("LWGetDeviceSN function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-		return 0;
-	}
-	//ret = LWGetDeviceType(handleList[index], ty, 20);
-	//if (ret != LW_RETURN_OK)
-	//{
-	//	printf("\LWGetDeviceType function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-	//	//return 0;
-	//}
-	//printf("\n设备SN号：%s, 型号：%s\n\n", sn, ty);
-
-
 	// 发送畸变文件
-	//// ret_code = LWSendFile(handleList[0], "D:\\Data\\2511A2D310011\\Bending_LUT.txt", LW_BENDING_LUT);
-	//// ret_code = LWSendFile(handleList[0], "C:\\Users\\l\\Documents\\2506ABDM40044\\DrnuLut_high.txt", LW_DRNU_HIGH);
 	//ret = LWSendFile(handleList[0], "C:/Users/12267/Desktop/DATA/DrnuLut_high.txt", LW_DRNU_HIGH);
 	//if (ret != LW_RETURN_OK)
 	//{
 	//	printf("LWSendFile function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-	//	//return 0;
 	//}
 	//return 0;
+
+	//// 网络配置
+	//LWNetworkInfo ninfo;
+	//ninfo.type = 0x01;
+	//memcpy(ninfo.ip, "192.168.1.205", 13);
+	//memcpy(ninfo.netmask, "255.255.255.0", 13);
+	//ret = LWSetNetworkInfo(handleList[index], ninfo);
+	//if (ret != LW_RETURN_OK)
+	//{
+	//	printf("LWSetNetworkInfo function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+	//	return 0;
+	//}
+	//_sleep(25000);
+	//ret = LWOpenDevice(handleList[index]);
+	//if (ret != LW_RETURN_OK)
+	//{
+	//	printf("\nLWOpenDevice function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+	//	return 0;
+	//}
+	//LWNetworkInfo ninfo;
+	//ret = LWGetNetworkInfo(handleList[index], &ninfo);
+	//if (ret != LW_RETURN_OK)
+	//{
+	//	printf("LWGetNetworkInfo function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+	//	return 0;
+	//}
+	//printf("IP: %s, Type: %u, Mask: %s\n", ninfo.ip, ninfo.type, ninfo.netmask);
+
+	ret = LWSetExposureMode(handleList[index], LW_TOF_SENSOR, LWExposureMode::LW_EXPOSURE_MANUAL);
+	if (ret != LW_RETURN_OK)
+	{
+		printf("LWSetExposureMode function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		return 0;
+	}
 
 	ret = LWSetFrameRate(handleList[index], 10);
 	if (ret != LW_RETURN_OK)
@@ -173,19 +171,6 @@ int main(int argc, char* argv[])
 		printf("LWSetFrameRate function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
 		return 0;
 	}
-
-	LWNetworkInfo ninfo;
-	ret = LWGetNetworkInfo(handleList[index], &ninfo);
-	//ninfo.type = 0x00;
-	//memcpy(ninfo.ip, "192.168.1.200", 13);
-	//memcpy(ninfo.netmask, "255.255.255.0", 13);
-	//ret = LWSetNetworkInfo(handleList[index], ninfo);
-	if (ret != LW_RETURN_OK)
-	{
-		printf("LWGetNetworkInfo function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-		return 0;
-	}
-	printf("IP: %s, Type: %u, Mask: %s\n", ninfo.ip, ninfo.type, ninfo.netmask);
 
 	int earr[2] = {1500, 1200};
 	ret = LWSetExposureTime(handleList[index], LW_TOF_SENSOR, earr, 2);
@@ -195,15 +180,6 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	printf("Set Exposure Time: %d, %d\n", earr[0], earr[1]);
-
-	LWExposureMode emd;
-	ret = LWGetExposureMode(handleList[index], LW_TOF_SENSOR, &emd);
-	if (ret != LW_RETURN_OK)
-	{
-		printf("LWGetExposureMode function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-		return 0;
-	}
-	printf("\n设备曝光模式：%d\n\n", emd);
 
 	//ret = LWSetTransformDepthToRgbEnable(handleList[index], true);
 	//if (ret != LW_RETURN_OK)
@@ -224,6 +200,41 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	ret = LWSetSpatialFilterParams(handleList[index], LWFilterParam{ false, 3 });
+	if (ret != LW_RETURN_OK)
+	{
+		printf("LWSetSpatialFilterParams function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		return 0;
+	}
+
+	ret = LWSetTimeFilterParams(handleList[index], LWFilterParam{ false, 3, 100 });
+	if (ret != LW_RETURN_OK)
+	{
+		printf("LWSetTimeFilterParams function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		return 0;
+	}
+
+	ret = LWSetTimeMedianFilterParams(handleList[index], LWFilterParam{ false, 3, 100 });
+	if (ret != LW_RETURN_OK)
+	{
+		printf("LWSetTimeMedianFilterParams function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		return 0;
+	}
+
+	ret = LWSetFlyingPixelsFilterParams(handleList[index], LWFilterParam{ true, 5 });
+	if (ret != LW_RETURN_OK)
+	{
+		printf("LWSetFlyingPixelsFilterParams function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		return 0;
+	}
+
+	ret = LWSetConfidenceFilterParams(handleList[index], LWFilterParam{ true, 5 });
+	if (ret != LW_RETURN_OK)
+	{
+		printf("LWSetConfidenceFilterParams function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		return 0;
+	}
+
 	ret = LWStartStream(handleList[index]);
 	if (ret != LW_RETURN_OK)
 	{
@@ -233,17 +244,18 @@ int main(int argc, char* argv[])
 
 	LWFrameData frame;
 	int64_t t0 = 0;
-	int64_t fps = 0;
-	int count = 0;
+	int64_t count = 0;
+	int64_t err_count = 0;
 	while (true)
-		//while (true)
 	{
 		ret = LWGetFrameReady(handleList[index]);
 		if (ret != LW_RETURN_OK)
 		{
 			printf("LWGetFrameReady function call failed: %s\n", LWGetReturnCodeDescriptor(ret));
-			//break;
+			if (++err_count > 3) break;
+			continue;
 		}
+		err_count = 0;
 
 		//ret = LWGetFrame(handleList[index], &frame, LWFrameType::LW_RGB_TO_DEPTH_FRAME);
 		//ret = LWGetFrame(handleList[index], &frame, LWFrameType::LW_DEPTH_TO_RGB_FRAME);
@@ -255,39 +267,74 @@ int main(int argc, char* argv[])
 		if (ret != LW_RETURN_OK)
 		{
 			printf("LWGetFrame function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-			//break;
+			continue;
 		}
 
+		// 帧率显示
 		if (t0 != frame.timestamp.tv_sec)
 		{
-			printf("\ndata frame rate: %lld", fps / (frame.timestamp.tv_sec - t0));
+			printf("\nFPS: %lld ", count / (frame.timestamp.tv_sec - t0));
 
 			t0 = frame.timestamp.tv_sec;
-			fps = 0;
+			count = 0;
 		}
-		++fps;
+		++count;
 
-		//printf("\n(%u, %u)\
-		//		\nframeIndex: %u \
-		//		\nbufferSize: %u \
-		//		\nelemSize: %u \
-		//		\ntotal: %u \
-		//		\nframeType: %u\n\n \ ", frame.width, frame.height, frame.frameIndex, frame.bufferSize, frame.elemSize, frame.total, frame.frameType);
+		// 帧信息显示
+		printf("\nframe index: %u, timestamp: %lld.%lld, chip: %.2f℃, laser1: %.2f℃, laser2: %.2f℃, frameType: %u, width: %u, height: %u, bufferSize: %u, elemSize: %u, total: %u",
+			frame.frameIndex, 
+			frame.timestamp.tv_sec, frame.timestamp.tv_usec, 
+			frame.temperature.chip, frame.temperature.laser1, frame.temperature.laser2,
+			frame.frameType, 
+			frame.width, frame.height, 
+			frame.bufferSize, 
+			frame.elemSize, 
+			frame.total);
 
-		cv::Mat img(frame.height, frame.width, CV_16UC1, frame.pFrameData);
-		showMat_Thre(img, 7500);
-
-		//cv::Mat img(frame.height, frame.width, CV_8UC3, frame.pFrameData);
+		//// IR图像显示
+		//cv::Mat img(frame.height, frame.width, CV_8UC1, frame.pFrameData);
 		//cv::namedWindow("img", 0);
 		//cv::resizeWindow("img", 640, 480);
 		//cv::imshow("img", img);
-		//cv::waitKey(5);
+		//cv::waitKey(30);
+
+		// Depth图显示
+		cv::Mat dst;
+		cv::Mat src(frame.height, frame.width, CV_16UC1, frame.pFrameData);
+		src.convertTo(dst, CV_8UC1, 255.0 / 6000);
+		cv::namedWindow("dst", 0);
+		cv::resizeWindow("dst", 640, 480);
+		cv::imshow("dst", dst);
+		cv::waitKey(30);
+		
+		//// RGB图像显示
+		//cv::Mat img(frame.height, frame.width, CV_8UC3, frame.pFrameData);
+		//cv::cvtColor(img, img, cv::COLOR_RGB2BGR);
+		//cv::namedWindow("img", 0);
+		//cv::resizeWindow("img", 640, 480);
+		//cv::imshow("img", img);
+		//cv::waitKey(30);
+
+		//// 保存图像
+		//cv::imwrite("C:/Users/12267/Desktop/kimg.bmp", img);
+		//cv::imwrite("C:/Users/12267/Desktop/img1.png", img);
+		//cv::imwrite("C:/Users/12267/Desktop/kimg.jpg", img);
+		
+		//// 保存数据
+		//ret = LWSaveDataAsCSVFile("C:/Users/12267/Desktop/dep.csv", &frame);
+		//if (ret != LW_RETURN_OK)
+		//{
+		//	printf("LWGetFrame function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		//	//break;
+		//}
+
+		if (frame.frameIndex > 50) break;
 	}
 
 	ret = LWStopStream(handleList[index]);
 	if (ret != LW_RETURN_OK)
 	{
-		printf("LWStopStream function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
+		printf("\nLWStopStream function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
 		return 0;
 	}
 
@@ -298,15 +345,9 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	ret = LWCleanupResources();
-	if (ret != LW_RETURN_OK)
-	{
-		printf("LWCleanupResources function call failed: %s\n\n", LWGetReturnCodeDescriptor(ret));
-	}
+	LWCleanupResources();
 
 	printf("\n退出\n");
-
-	system("pause");
 
 	return 0;
 }

@@ -15,7 +15,7 @@ project ("D3SDKC")
 # 设置版本号
 set(MAJOR_VAR 3)
 set(MINOR_VAR 3)
-set(PATCH_VAR 2)
+set(PATCH_VAR 3)
 set(REVISION_VAR 0)
 
 

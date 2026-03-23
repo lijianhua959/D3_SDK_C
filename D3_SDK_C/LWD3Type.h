@@ -70,43 +70,46 @@ struct LWTemperatureParams
 #endif //LW_INTERNAL_API
 
 
-/// @brief 设备句柄描述符，前四个字节为远端IPv4地址后四个字节为本机IPv4地址。
+/// @brief 设备描述符，前四个(高)字节为本机端IPv4地址，后四个(低)字节为设备端IPv4地址。
 typedef uint64_t LWDeviceHandle;
 
 ///@brief 函数返回码，用于告知函数的执行结果。
 typedef enum : uint32_t
 {
     LW_RETURN_OK                    = 0x00,	///< 执行成功。
-    LW_RETURN_COMMAND_UNDEFINED     = 0x03,	///< 命令未定义。
-    LW_RETURN_COMMAND_ERROR         = 0x04,	///< 命令结构错误
-    LW_RETURN_ARG_OUT_OF_RANGE      = 0x05,	///< 参数设置超范围
-    LW_RETURN_FILE_LENGTH_ERROR     = 0x06,	///< 文件大小与实际传输大小不一致
-    LW_RETURN_FILE_MD5_ERROR        = 0x07,	///< 文件MD5校验失败
+    LW_RETURN_COMMAND_UNDEFINED     = 0x03,	///< 命令未定义，即该功能在设备端暂未实现。
+    LW_RETURN_COMMAND_ERROR         = 0x04,	///< 命令结构错误。
+    LW_RETURN_ARG_OUT_OF_RANGE      = 0x05,	///< 参数设置超范围。
+    LW_RETURN_FILE_LENGTH_ERROR     = 0x06,	///< 文件大小与实际传输大小不一致。
+    LW_RETURN_FILE_MD5_ERROR        = 0x07,	///< 文件MD5校验失败。
 
     LW_RETURN_TIMEOUT               = 0x20,	///< 执行超时。
     LW_RETURN_NETWORK_ERROR         = 0x21,	///< 网络错误，欲知详情请调用“LWGetReturnCodeDescriptor”函数。
-    LW_RETURN_UNINITIALIZED         = 0x22, ///< SDK还未进行资源初始化（须调用“LWInitializeResources”函数来初始化资源）。
-    LW_RETURN_UNOPENED              = 0x23, ///< 设备未打开（须调用“LWOpenDevice”函数来打开设备）。
-    LW_RETURN_HANDLE_MISMATCH       = 0x24, ///< 传入的设备句柄无效，请检查该句柄是否是“LWFindDevices”函数调用返回的设备句柄。
+    LW_RETURN_UNINITIALIZED         = 0x22, ///< SDK还未进行资源初始化(须调用“LWInitializeResources”函数来初始化资源)。
+    LW_RETURN_UNOPENED              = 0x23, ///< 设备未打开(须调用“LWOpenDevice”函数来打开设备)。
+    LW_RETURN_HANDLE_MISMATCH       = 0x24, ///< 传入的设备描述符无效，请检查其是否是通过“LWGetDeviceInfoList”函数或“LWFindDevices”函数最新调用所得到的设备描述符。
     LW_RETURN_FILE_OPEN_ERROR       = 0x25, ///< 文件打开失败。
-    LW_RETURN_NOT_SUPPORTED         = 0x26, ///< 当前设备尚不支持该功能。
-    LW_RETURN_VERSION_ERROR         = 0x27, ///< 协议版本不匹配。
+    LW_RETURN_NOT_SUPPORTED         = 0x26, ///< 暂不支持该功能。
+    LW_RETURN_VERSION_ERROR         = 0x27, ///< 通讯协议版本不适配。
     LW_RETURN_OUT_OF_MEMORY         = 0x28, ///< 传入的数据缓存大小不足。
     LW_RETURN_TYPE_NOT_EXIST        = 0x29, ///< 类型错误，不存在该类型或是不支持该类型。
-    LW_RETURN_TYPE_INPUT_ERROR      = 0x2a, ///< 数据类型错误，请传入正确类型的数据（例如：“LWSavePointCloudAsPCDFile”函数只能传入点云数据）。
+    LW_RETURN_TYPE_INPUT_ERROR      = 0x2a, ///< 数据类型错误，请传入正确类型的数据(例如：“LWSavePointCloudAsPCDFile”函数只能传入点云数据)。
     LW_RETURN_THREAD_QUIT_TIMEOUT   = 0x2b, ///< 线程退出超时。
     LW_RETURN_DATA_TYPE_MISMATCH    = 0x2c, ///< 无法获取该类型数据，请设置正确的数据接受类型。
     LW_RETURN_DATA_NOT_UPDATED      = 0x2d, ///< 数据接受缓存区未更新数据，在获取数据之前请先成功调用“LWGetFrameReady”函数。
-    LW_RETURN_FILE_NOT_EXIST        = 0x2e, ///< 文件不存在。
+    LW_RETURN_FILE_NOT_EXIST        = 0x2e, ///< 文件不存在。 
+    LW_RETURN_DATA_SIZE_ERROR       = 0x2f, ///< 传入的数据大小不匹配。
 
     LW_RETURN_FIRMWARE_UPDATE_FAIL  = 0x30, ///< 设备固件更新失败。
     LW_RETURN_INDEX_NOT_EXIST       = 0x31, ///< 不存在该索引值，请传入正确的索引值。
-    LW_RETURN_DEVICE_INVALID        = 0x32, ///< 库不支持对该设备的操作。
+    LW_RETURN_DEVICE_INVALID        = 0x32, ///< SDK不支持该系列设备，请选择其对应的SDK进行相关操作。
     LW_RETURN_DEVICE_IP_CONFLICT    = 0x33, ///< 检测到接入的设备有相同的IP，导致无法访问有IP冲突的设备，须将每个设备的IP设置成唯一的。
+    LW_RETURN_DEVICE_OCCUPIED       = 0x34, ///< 设备已被占用(设备已被其它设备描述符打开)。
+    LW_RETURN_HANDLE_EXPIRE         = 0x35, ///< 设备描述符已失效，需要重新搜索设备获取新的设备描述符。
 
     LW_RETURN_CUSTOM_ERROR          = 0xfa, ///< 自定义错误，欲知详情请调用“LWGetReturnCodeDescriptor”函数。
 
-    LW_RETURN_UNDEFINED_ERROR       = 0xff, ///< 未定义错误。
+    LW_RETURN_UNDEFINED_ERROR       = 0xff  ///< 未定义错误。
 
 } LWReturnCode;
 
@@ -122,7 +125,7 @@ typedef enum : uint32_t
     LW_RGB_FRAME            = 0B00010000,   ///< RGB数据类型。
     LW_RGB_TO_DEPTH_FRAME   = 0B00100000,   ///< RGB数据映射到深度后的RGB数据类型，其分辨率对齐到深度数据（与深度数据的分辨率一致）。
     LW_DEPTH_TO_RGB_FRAME   = 0B01000000,   ///< 深度数据映射到RGB后的深度数据类型，其分辨率对齐到RGB数据（与RGB数据的分辨率一致）。
-    LW_D2R_POINTCLOUD_FRAME = 0B10000000,   ///< 深度数据映射到RGB后的点云数据类型，z-轴数据对应深度值，其点数对齐到RGB像素数（与RGB数据的像素数一致）。
+    LW_D2R_POINTCLOUD_FRAME = 0B10000000    ///< 深度数据映射到RGB后的点云数据类型，z-轴数据对应深度值，其点数对齐到RGB像素数（与RGB数据的像素数一致）。
 
 } LWFrameType;
 
@@ -132,7 +135,7 @@ typedef enum : uint32_t
     LW_PIXEL_FORMAT_UCHAR       = 0x00,	///< 每像素为无符号字符型（unsigned char）。
     LW_PIXEL_FORMAT_USHORT      = 0x01,	///< 每像素为无符号短整型（unsigned short）。
     LW_PIXEL_FORMAT_RGB888      = 0x02,	///< 每像素为三通道无符号字符型(详见：“LWRGB888Pixel”结构体)。
-    LW_PIXEL_FORMAT_VECTOR3F    = 0x03,	///< 每像素为三通道浮点型(详见：“LWVector3f”结构体)。
+    LW_PIXEL_FORMAT_VECTOR3F    = 0x03 	///< 每像素为三通道浮点型(详见：“LWVector3f”结构体)。
 
 } LWPixelFormat;
 
@@ -143,6 +146,19 @@ typedef enum : uint32_t
     LW_RGB_SENSOR = 0x02,	///< RGB传感器。
 
 } LWSensorType;
+
+
+/// @brief TOF传感器的HDR模式枚举。
+typedef enum : uint32_t
+{
+    LW_DFN_NOT_HDR  = 0x00, ///< 适用于远距离且没有高动态范围的应用场景，采用双频非HDR模式(双频2积分模式)。需设置1个曝光时间(例如：1000)，否则会使用默认的曝光时间。其帧率最高可达28帧。
+    LW_SFN_HDR      = 0x01, ///< 适用于近距离且具有高动态范围的应用场景，采用单频普通HDR模式(双频3积分模式)。需设置3个曝光时间依次对应高、中、低3个挡位(例如：1000、150、20)，否则会使用默认的曝光时间。其帧率最高可达18帧。
+    LW_DFN_HDR      = 0x02, ///< 适用于远距离且具有高动态范围的应用场景，采用双频普通HDR模式(双频6积分模式)。需设置3个曝光时间依次对应高、中、低3个挡位(例如：1000、150、20)，否则会使用默认的曝光时间。其帧率最高可达9帧。
+    LW_SFN_HP_HDR   = 0x03, ///< 适用于近距离且具有高动态范围的静态应用场景，采用单频高精度HDR模式(双频 6积分模式)，可提升距离探测精度。需设置3个曝光时间依次对应高、中、低3个挡位(例如：1000、150、20)，否则会使用默认的曝光时间。其帧率最高可达9帧。
+    LW_DFN_HP_HDR   = 0x04, ///< 适用于远距离且具有高动态范围的静态应用场景，采用双频高精度HDR模式(双频12积分模式)，可提升距离探测精度。需设置3个曝光时间依次对应高、中、低3个挡位(例如：1000、150、20)，否则会使用默认的曝光时间。其帧率最高可达5帧。
+    LW_SFN_NOT_HDR  = 0xF1  ///< 适用于近距离且没有高动态范围的应用场景，采用单频非HDR模式(单积分模式)。其帧率最高可达56帧。
+
+} LWHDRMode;
 
 /// @brief 曝光模式。
 typedef enum : uint32_t
@@ -206,7 +222,7 @@ typedef struct
 {
     LWDeviceHandle  handle;         ///< 设备句柄描述符。
     char            sn[32];         ///< 设备SN。
-    char            type[32];       ///< 设备类型。
+    char            type[32];       ///< 设备类型。注意：当设备已经被占用时，此信息将为空字符串。
     char            ip[32];         ///< 设备IP。
     char            local_ip[32];   ///< 本机IP。
 
